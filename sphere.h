@@ -43,7 +43,8 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     // Record hit data
     rec.t = root;
     rec.p = r.at(rec.t);
-    rec.normal = (rec.p - center) / radius;
+    vec3 outward_normal = (rec.p - center) / radius; // A normal facing away from the surface
+    rec.set_face_normal(r, outward_normal); // Set the normal
     // Yes it did hit
     return true;
 }
