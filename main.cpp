@@ -4,8 +4,25 @@
 
 #include <iostream>
 
+// Functions
+
+bool hit_sphere(const point3& center, double radius, const ray& r) {
+    // Computes whether the ray hits a sphere by solving vector quadratic
+    vec3 oc = r.origin() - center; // Distance vector between origin and sphere center
+    // at^2 + bt + c = 0
+    auto a = dot(r.direction(), r.direction()); // If a point is on the sphere then this == (radius)^2
+    auto b = 2.0 * dot(oc, r.direction()); 
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    return (discriminant > 0); // Return true only if there are 2 roots to the quadratic
+}
+
 color ray_color(const ray& r) {
     // Computes the background color
+    // If the ray hits the sphere
+    if (hit_sphere(point3(0, 0, -1), 0.5, r))
+        return color(1, 0, 0); // Make it red
+    // Else
     // Get the direction the ray points
     vec3 unit_direction = unit_vector(r.direction());
     // Use it to generate a gradient
@@ -13,6 +30,8 @@ color ray_color(const ray& r) {
     // Linear interpolation (LERP) blendedValue = (1 - t) * startValue + t * endValue
     return (1.0 - t) * color(1.0, 1.0, 1.00) + t * color(0.5, 0.7, 1.0);
 }
+
+// Main
 
 int main() {
 
@@ -46,8 +65,8 @@ int main() {
         // From left to right
         for (int i = 0; i < image_width; ++i) {
             // Proportions of way through image
-            auto u = double(i) / (image_width - 1);
-            auto v = double(j) / (image_height - 1);
+            auto u = double(i) / (image_width - 1); // Proportion across
+            auto v = double(j) / (image_height - 1); // Proportion down
             // Compute ray from proportions
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
             // Colour from ray
