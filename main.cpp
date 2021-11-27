@@ -6,7 +6,7 @@
 
 // Functions
 
-bool hit_sphere(const point3& center, double radius, const ray& r) {
+double hit_sphere(const point3& center, double radius, const ray& r) {
     // Computes whether the ray hits a sphere by solving vector quadratic
     vec3 oc = r.origin() - center; // Distance vector between origin and sphere center
     // at^2 + bt + c = 0
@@ -14,19 +14,34 @@ bool hit_sphere(const point3& center, double radius, const ray& r) {
     auto b = 2.0 * dot(oc, r.direction()); 
     auto c = dot(oc, oc) - radius*radius;
     auto discriminant = b*b - 4*a*c;
-    return (discriminant > 0); // Return true only if there are 2 roots to the quadratic
+    
+    if (discriminant < 0) {
+        // If there are no roots
+        // i.e. no intersection
+        return -1.0;
+    } else {
+        // There is an intersection
+        // Return t value
+        return (-b - sqrt(discriminant)) / (2.0 * a);
+    }
 }
 
 color ray_color(const ray& r) {
     // Computes the background color
+    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
     // If the ray hits the sphere
-    if (hit_sphere(point3(0, 0, -1), 0.5, r))
-        return color(1, 0, 0); // Make it red
+    if (t > 0.0) {
+        // Calculate normal
+        // r.at(t) is the point where the intersects the sphere
+        // The sphere origin is then subtracted to give the normal
+        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
+        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+    }
     // Else
     // Get the direction the ray points
     vec3 unit_direction = unit_vector(r.direction());
     // Use it to generate a gradient
-    auto t = 0.5*(unit_direction.y() + 1.0);
+    t = 0.5*(unit_direction.y() + 1.0);
     // Linear interpolation (LERP) blendedValue = (1 - t) * startValue + t * endValue
     return (1.0 - t) * color(1.0, 1.0, 1.00) + t * color(0.5, 0.7, 1.0);
 }
