@@ -1,3 +1,6 @@
+#include "color.h"
+#include "vec3.h"
+
 #include <iostream>
 
 int main() {
@@ -22,16 +25,9 @@ int main() {
         // From left to right
         for (int i = 0; i < image_width; ++i) {
             // Colour components
-            auto r = double(i) / (image_width - 1); // Approaches 1
-            auto g = double(j) / (image_height - 1); // Approaches 0
-            auto b = 0.25; // Const
-
-            int ir = static_cast<int>(255.999 * r);
-            int ig = static_cast<int>(255.999 * g);
-            int ib = static_cast<int>(255.999 * b);
-
-            // Write values
-            std::cout << ir << " " << ig << " " << ib << "\n";
+            color pixel_color(double(i) / (image_width - 1), double(j) / (image_width - 1), 0.25);
+            // Write value
+            write_color(std::cout, pixel_color);
         }
     }
 
