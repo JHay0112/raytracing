@@ -1,47 +1,26 @@
+#include "rtweekend.h"
+
 #include "color.h"
-#include "ray.h"
-#include "vec3.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
 #include <iostream>
 
 // Functions
 
-double hit_sphere(const point3& center, double radius, const ray& r) {
-    // Computes whether the ray hits a sphere by solving vector quadratic
-    vec3 oc = r.origin() - center; // Distance vector between origin and sphere center
-    // at^2 + bt + c = 0
-    auto a = dot(r.direction(), r.direction()); // If a point is on the sphere then this == (radius)^2
-    auto half_b = dot(oc, r.direction()); 
-    auto c = oc.length_squared() - radius*radius;
-    auto discriminant = half_b*half_b - a*c;
-    
-    if (discriminant < 0) {
-        // If there are no roots
-        // i.e. no intersection
-        return -1.0;
-    } else {
-        // There is an intersection
-        // Return t value
-        return (-half_b - sqrt(discriminant)) / a;
+color ray_color(const ray& r, const hittable& world) {
+    // Hit details
+    hit_record rec;
+    // If the ray hits the world
+    if (world.hit(r, 0, infinity, rec)) {
+        // Then colour by world colour map
+        return 0.5 * (rec.normal + color(1,1,1));
     }
-}
-
-color ray_color(const ray& r) {
-    // Computes the background color
-    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
-    // If the ray hits the sphere
-    if (t > 0.0) {
-        // Calculate normal
-        // r.at(t) is the point where the intersects the sphere
-        // The sphere origin is then subtracted to give the normal
-        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
-    }
-    // Else
+    // Else colour by ray colour map
     // Get the direction the ray points
     vec3 unit_direction = unit_vector(r.direction());
     // Use it to generate a gradient
-    t = 0.5*(unit_direction.y() + 1.0);
+    auto t = 0.5*(unit_direction.y() + 1.0);
     // Linear interpolation (LERP) blendedValue = (1 - t) * startValue + t * endValue
     return (1.0 - t) * color(1.0, 1.0, 1.00) + t * color(0.5, 0.7, 1.0);
 }
@@ -54,6 +33,12 @@ int main() {
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
+
+    // World
+    hittable_list world;
+    // Add spheres to world
+    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5)); // Std. sphere
+    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100)); // Gnd.
 
     // Camera Parameters
     auto viewport_height = 2.0;
@@ -85,7 +70,7 @@ int main() {
             // Compute ray from proportions
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
             // Colour from ray
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, world);
             // Write value
             write_color(std::cout, pixel_color);
         }
