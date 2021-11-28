@@ -139,7 +139,7 @@ inline vec3 unit_vector(vec3 v) {
 }
 
 // Random
-vec3 random_in_unit_sphere() {
+inline vec3 random_in_unit_sphere() {
     while (true) {
         // Random vector in cube around unit circle
         auto p = vec3::random(-1, 1);
@@ -148,6 +148,10 @@ vec3 random_in_unit_sphere() {
         // Else it's in the sphere hurrah!
         return p;
     }
+}
+
+vec3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
 }
 
 #endif
