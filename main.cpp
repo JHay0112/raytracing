@@ -55,7 +55,7 @@ int main() {
     // From bottom up
     for (int j = image_height - 1; j >= 0; --j) {
         // Progress bar
-        std::cerr << "\rScanlines remaining: " << j << std::flush;
+        std::cerr << "\rScanlines remaining: " << j << " " << std::flush;
         // From left to right
         for (int i = 0; i < image_width; ++i) {
             // Initialise colour
