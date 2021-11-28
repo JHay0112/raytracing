@@ -16,7 +16,8 @@ color ray_color(const ray& r, const hittable& world, int depth) {
     if (depth <= 0)
         return color(0, 0, 0);
     // If the ray hits the world
-    if (world.hit(r, 0, infinity, rec)) {
+    // 0.001 values gives us some tolerance for imperfect hits
+    if (world.hit(r, 0.001, infinity, rec)) {
         // Decide diffuse direction
         point3 target = rec.p + rec.normal + random_in_unit_sphere();
         // Return colour based on diffuse
