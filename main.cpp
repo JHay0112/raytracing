@@ -9,13 +9,18 @@
 
 // Functions
 
-color ray_color(const ray& r, const hittable& world) {
+color ray_color(const ray& r, const hittable& world, int depth) {
     // Hit details
     hit_record rec;
+    // Depth limiting
+    if (depth <= 0)
+        return color(0, 0, 0);
     // If the ray hits the world
     if (world.hit(r, 0, infinity, rec)) {
-        // Then colour by world colour map
-        return 0.5 * (rec.normal + color(1,1,1));
+        // Decide diffuse direction
+        point3 target = rec.p + rec.normal + random_in_unit_sphere();
+        // Return colour based on diffuse
+        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
     }
     // Else colour by ray colour map
     // Get the direction the ray points
@@ -35,6 +40,7 @@ int main() {
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 100;
+    const int max_depth = 50;
 
     // World
     hittable_list world;
@@ -69,7 +75,7 @@ int main() {
                 // Compute ray from proportions
                 ray r = cam.get_ray(u, v);
                 // Colour from ray
-                pixel_color += ray_color(r, world);
+                pixel_color += ray_color(r, world, max_depth);
             }
             // Write value
             write_color(std::cout, pixel_color, samples_per_pixel);

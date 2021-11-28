@@ -1,6 +1,8 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include "rtweekend.h"
+
 #include <cmath>
 #include <iostream>
 
@@ -62,6 +64,15 @@ class vec3 {
 
         double length_squared() const {
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
+        }
+
+        // Random
+        inline static vec3 random() {
+            return vec3(random_double(), random_double(), random_double());
+        }
+
+        inline static vec3 random(double min, double max) {
+            return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
         }
     public:
         double e[3];
@@ -125,6 +136,18 @@ inline vec3 cross(const vec3 &u, const vec3 &v) {
 // Unit Vector
 inline vec3 unit_vector(vec3 v) {
     return v / v.length();
+}
+
+// Random
+vec3 random_in_unit_sphere() {
+    while (true) {
+        // Random vector in cube around unit circle
+        auto p = vec3::random(-1, 1);
+        // If length squared is greater than the radius
+        if (p.length_squared() >= 1) continue; // Go around again
+        // Else it's in the sphere hurrah!
+        return p;
+    }
 }
 
 #endif
