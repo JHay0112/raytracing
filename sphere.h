@@ -8,13 +8,14 @@ class sphere : public hittable {
     public:
         // Initilisation
         sphere() {}
-        sphere(point3 cen, double r) : center(cen), radius(r) {};
+        sphere(point3 cen, double r, shared_ptr<material> m) : center(cen), radius(r), mat_ptr(m) {};
 
         virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
 
     public:
         point3 center;
         double radius;
+        shared_ptr<material> mat_ptr;
 };
 
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
@@ -42,9 +43,10 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 
     // Record hit data
     rec.t = root;
-    rec.p = r.at(rec.t);
+    rec.p = r.at(rec.t); // Where on the ray did the intersection occur
     vec3 outward_normal = (rec.p - center) / radius; // A normal facing away from the surface
     rec.set_face_normal(r, outward_normal); // Set the normal
+    rec.mat_ptr = mat_ptr; // Set material
     // Yes it did hit
     return true;
 }
