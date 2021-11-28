@@ -144,6 +144,12 @@ inline vec3 unit_vector(vec3 v) {
     return v / v.length();
 }
 
+// Reflection
+vec3 reflect(const vec3& v, const vec3& n) {
+    // Reflects a vector v around a vector n
+    return v - 2*dot(v,n)*n;
+}
+
 // Random
 inline vec3 random_in_unit_sphere() {
     while (true) {

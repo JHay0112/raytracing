@@ -4,6 +4,7 @@
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
+#include "material.h"
 
 #include <iostream>
 
@@ -18,10 +19,13 @@ color ray_color(const ray& r, const hittable& world, int depth) {
     // If the ray hits the world
     // 0.001 values gives us some tolerance for imperfect hits
     if (world.hit(r, 0.001, infinity, rec)) {
-        // Decide diffuse direction from random unit vector in unit sphere
-        point3 target = rec.p + rec.normal + random_unit_vector();
-        // Return colour based on diffuse
-        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+        ray scattered;
+        color attenutation;
+        // If it scatters
+        if (rec.mat_ptr->scatter(r, rec, attenutation, scattered))
+            return attenutation * ray_color(scattered, world, depth - 1);
+        // Else
+        return color(0, 0, 0);
     }
     // Else colour by ray colour map
     // Get the direction the ray points
@@ -45,9 +49,16 @@ int main() {
 
     // World
     hittable_list world;
-    // Add spheres to world
-    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5)); // Std. sphere
-    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100)); // Gnd.
+    // Set some materials
+    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8));
+    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2));
+    // Create spheres
+    world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
+    world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
     // Camera
     camera cam;

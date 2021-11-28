@@ -46,4 +46,27 @@ class lambertian : public material {
         color albedo;
 };
 
+class metal : public material {
+    /*
+        Metal/Reflective Materials
+    */
+    public:
+        // Initialisation
+        metal(const color& a) : albedo(a) {}
+
+        // Scattering
+        virtual bool scatter(
+            const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+        ) const override {
+            // Calculate the reflected direction
+            vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+            // Create a ray from it
+            scattered = ray(rec.p, reflected);
+            attenuation = albedo;
+            return (dot(scattered.direction(), rec.normal) > 0);
+        }
+    public:
+        color albedo;
+};
+
 #endif
