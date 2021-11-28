@@ -3,6 +3,7 @@
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
+#include "camera.h"
 
 #include <iostream>
 
@@ -30,9 +31,10 @@ color ray_color(const ray& r, const hittable& world) {
 int main() {
 
     // Image Parameters
-    const auto aspect_ratio = 16.0 / 9.0;
+    const auto aspect_ratio = 16.0/9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
+    const int samples_per_pixel = 100;
 
     // World
     hittable_list world;
@@ -40,16 +42,8 @@ int main() {
     world.add(make_shared<sphere>(point3(0, 0, -1), 0.5)); // Std. sphere
     world.add(make_shared<sphere>(point3(0, -100.5, -1), 100)); // Gnd.
 
-    // Camera Parameters
-    auto viewport_height = 2.0;
-    auto viewport_width = aspect_ratio * viewport_height;
-    auto focal_length = 1.0;
-    // Camera Position
-    auto origin = point3(0, 0, 0);
-    // Camera Orientation
-    auto horizontal = vec3(viewport_width, 0, 0);
-    auto vertical = vec3(0, viewport_height, 0);
-    auto lower_left_corner = origin - horizontal/2 - vertical/2 - vec3(0, 0, focal_length);
+    // Camera
+    camera cam;
 
     // Render
     // Setup file
@@ -64,15 +58,21 @@ int main() {
         std::cerr << "\rScanlines remaining: " << j << std::flush;
         // From left to right
         for (int i = 0; i < image_width; ++i) {
-            // Proportions of way through image
-            auto u = double(i) / (image_width - 1); // Proportion across
-            auto v = double(j) / (image_height - 1); // Proportion down
-            // Compute ray from proportions
-            ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-            // Colour from ray
-            color pixel_color = ray_color(r, world);
+            // Initialise colour
+            color pixel_color(0, 0, 0);
+            // Take samples of pixel
+            for (int s = 0; s < samples_per_pixel; ++s) {
+                // Proportions of way through image
+                // Plus some shake for anti-aliasing
+                auto u = (i + random_double()) / (image_width - 1); // Proportion across
+                auto v = (j + random_double()) / (image_height - 1); // Proportion down
+                // Compute ray from proportions
+                ray r = cam.get_ray(u, v);
+                // Colour from ray
+                pixel_color += ray_color(r, world);
+            }
             // Write value
-            write_color(std::cout, pixel_color);
+            write_color(std::cout, pixel_color, samples_per_pixel);
         }
     }
 
