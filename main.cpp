@@ -10,10 +10,23 @@
 #include <iostream>
 #include <thread>
 #include <future>
+#include <vector>
+
+// Structs
+
+struct scene {
+    scene(const int w = 400, const double ar = 16.0/9.0, const int spp = 100, const int md = 50) : width(w), aspect_ratio(ar), height(static_cast<int>(w/ar)), samples_per_pixel(spp), max_depth(md) {}
+    const int width;
+    const int height;
+    const int samples_per_pixel;
+    const double aspect_ratio;
+    const int max_depth;
+    camera cam;
+};
 
 // Functions
 
-color ray_color(const ray& r, const hittable& world, int depth) {
+color ray_color(const ray& r, const hittable& objects, int depth) {
     // Hit details
     hit_record rec;
     // Depth limiting
@@ -21,12 +34,12 @@ color ray_color(const ray& r, const hittable& world, int depth) {
         return color(0, 0, 0);
     // If the ray hits the world
     // 0.001 values gives us some tolerance for imperfect hits
-    if (world.hit(r, 0.001, infinity, rec)) {
+    if (objects.hit(r, 0.001, infinity, rec)) {
         ray scattered;
         color attenutation;
         // If it scatters
         if (rec.mat_ptr->scatter(r, rec, attenutation, scattered))
-            return attenutation * ray_color(scattered, world, depth - 1);
+            return attenutation * ray_color(scattered, objects, depth - 1);
         // Else
         return color(0, 0, 0);
     }
@@ -39,8 +52,30 @@ color ray_color(const ray& r, const hittable& world, int depth) {
     return (1.0 - t) * color(1.0, 1.0, 1.00) + t * color(0.5, 0.7, 1.0);
 }
 
-void scanline(const int line, std::promise<color[]> && pixels) {
+std::vector<color> scanline(const int line, const scene& image, const hittable_list& objects) {
+    // Store pixels
+    std::vector<color> pixels;
 
+    // From left to right
+    for (int i = 0; i < image.width; ++i) {
+        // Initialise colour
+        color pixel(0, 0, 0);
+        // Take samples of pixel
+        for (int s = 0; s < image.samples_per_pixel; ++s) {
+            // Proportions of way through image
+            // Plus some shake for anti-aliasing
+            auto u = (i + random_double()) / (image.width - 1); // Proportion across
+            auto v = (line + random_double()) / (image.height - 1); // Proportion down
+            // Compute ray from proportions
+            ray r = image.cam.get_ray(u, v);
+            // Colour from ray
+            pixel += ray_color(r, objects, image.max_depth);
+        }
+        // Add pixel to vector
+        pixels.push_back(pixel);
+    }
+    
+    return pixels;
 }
 
 // Main
@@ -48,55 +83,46 @@ void scanline(const int line, std::promise<color[]> && pixels) {
 int main() {
 
     // Image Parameters
-    const auto aspect_ratio = 16.0/9.0;
-    const int image_width = 400;
-    const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 100;
-    const int max_depth = 50;
-
-    // World
-    hittable_list world;
+    struct scene image = {640};
+    hittable_list objects;
     // Set some materials
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
     auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
     auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
     // Create objects
-    world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
-    world.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(-0.8, -0.8, -1.5), point3(-0.1, -1.0, -1.0), material_left));
-    world.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(1.0, -1.0, -1.5), point3(-0.1, -1.0, -1.0), material_left));
+    objects.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+    objects.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(-0.8, -0.8, -1.5), point3(-0.1, -1.0, -1.0), material_left));
+    objects.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(1.0, -1.0, -1.5), point3(-0.1, -1.0, -1.0), material_left));
 
-    // Camera
-    camera cam;
+    // Pixels
+    std::future<std::vector<color>> pixels[image.height];
+    int completed_threads = 0;
 
     // Render
     // Setup file
     // P3 - Colours are ASCII
     // image_width image_height - Image dimensions
     // 255 - Max colour
-    std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+    std::cout << "P3\n" << image.width << " " << image.height << "\n255\n";
 
     // From bottom up
-    for (int j = image_height - 1; j >= 0; --j) {
+    for (int j = image.height - 1; j >= 0; --j) {
         // Progress bar
-        std::cerr << "\rScanlines remaining: " << j << " " << std::flush;
+        std::cerr << "\rScanlines to initialise: " << j << " " << std::flush;
+        pixels[j] = std::async(scanline, j, image, objects);
+    }
+
+    std::cerr << "\n";
+
+    // From bottom up
+    for (int j = image.height - completed_threads - 1; j >= 0; --j) {
+        // Progress bar
+        std::cerr << "\rScanlines to collect: " << j << " " << std::flush;
+        std::vector<color> line = pixels[j].get();
         // From left to right
-        for (int i = 0; i < image_width; ++i) {
-            // Initialise colour
-            color pixel_color(0, 0, 0);
-            // Take samples of pixel
-            for (int s = 0; s < samples_per_pixel; ++s) {
-                // Proportions of way through image
-                // Plus some shake for anti-aliasing
-                auto u = (i + random_double()) / (image_width - 1); // Proportion across
-                auto v = (j + random_double()) / (image_height - 1); // Proportion down
-                // Compute ray from proportions
-                ray r = cam.get_ray(u, v);
-                // Colour from ray
-                pixel_color += ray_color(r, world, max_depth);
-            }
-            // Write value
-            write_color(std::cout, pixel_color, samples_per_pixel);
+        for (int i = 0; i < image.width; ++i) {
+            write_color(std::cout, line[i], image.samples_per_pixel);
         }
     }
 
