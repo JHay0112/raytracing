@@ -10,6 +10,7 @@
 #include <iostream>
 #include <thread>
 #include <future>
+#include <vector>
 
 // Structs
 
@@ -51,22 +52,30 @@ color ray_color(const ray& r, const hittable& objects, int depth) {
     return (1.0 - t) * color(1.0, 1.0, 1.00) + t * color(0.5, 0.7, 1.0);
 }
 
-color compute_pixel(const int x, const int y, const scene& image, const hittable_list& objects) {
-    // Initialise colour
-    color pixel(0, 0, 0);
-    // Take samples of pixel
-    for (int s = 0; s < image.samples_per_pixel; ++s) {
-        // Proportions of way through image
-        // Plus some shake for anti-aliasing
-        auto u = (x + random_double()) / (image.width - 1); // Proportion across
-        auto v = (y + random_double()) / (image.height - 1); // Proportion down
-        // Compute ray from proportions
-        ray r = image.cam.get_ray(u, v);
-        // Colour from ray
-        pixel += ray_color(r, objects, image.max_depth);
-    }
+std::vector<color> scanline(const int line, const scene& image, const hittable_list& objects) {
+    // Store pixels
+    std::vector<color> pixels;
 
-    return pixel;
+    // From left to right
+    for (int i = 0; i < image.width; ++i) {
+        // Initialise colour
+        color pixel(0, 0, 0);
+        // Take samples of pixel
+        for (int s = 0; s < image.samples_per_pixel; ++s) {
+            // Proportions of way through image
+            // Plus some shake for anti-aliasing
+            auto u = (i + random_double()) / (image.width - 1); // Proportion across
+            auto v = (line + random_double()) / (image.height - 1); // Proportion down
+            // Compute ray from proportions
+            ray r = image.cam.get_ray(u, v);
+            // Colour from ray
+            pixel += ray_color(r, objects, image.max_depth);
+        }
+        // Add pixel to vector
+        pixels.push_back(pixel);
+    }
+    
+    return pixels;
 }
 
 // Main
@@ -74,7 +83,7 @@ color compute_pixel(const int x, const int y, const scene& image, const hittable
 int main() {
 
     // Image Parameters
-    struct scene image;
+    struct scene image = {1920};
     hittable_list objects;
     // Set some materials
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
@@ -87,7 +96,7 @@ int main() {
     objects.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(1.0, -1.0, -1.5), point3(-0.1, -1.0, -1.0), material_left));
 
     // Pixels
-    std::future<color> pixels[image.height][image.width];
+    std::future<std::vector<color>> pixels[image.height];
 
     // Render
     // Setup file
@@ -98,20 +107,15 @@ int main() {
 
     // From bottom up
     for (int j = image.height - 1; j >= 0; --j) {
-        // From left to right
-        for (int i = 0; i < image.width; ++i) {
-            // Start threads
-            pixels[j][i] = std::async(compute_pixel, i, j, image, objects);
-        }
+        pixels[j] = std::async(scanline, j, image, objects);
     }
 
     // From bottom up
     for (int j = image.height - 1; j >= 0; --j) {
+        std::vector<color> line = pixels[j].get();
         // From left to right
         for (int i = 0; i < image.width; ++i) {
-            // End threads
-            // Write value
-            write_color(std::cout, pixels[j][i].get(), image.samples_per_pixel);
+            write_color(std::cout, line[i], image.samples_per_pixel);
         }
     }
 
