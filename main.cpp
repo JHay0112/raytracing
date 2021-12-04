@@ -8,6 +8,8 @@
 #include "material.h"
 
 #include <iostream>
+#include <thread>
+#include <future>
 
 // Functions
 
@@ -37,13 +39,17 @@ color ray_color(const ray& r, const hittable& world, int depth) {
     return (1.0 - t) * color(1.0, 1.0, 1.00) + t * color(0.5, 0.7, 1.0);
 }
 
+void scanline(const int line, std::promise<color[]> && pixels) {
+
+}
+
 // Main
 
 int main() {
 
     // Image Parameters
     const auto aspect_ratio = 16.0/9.0;
-    const int image_width = 400;
+    const int image_width = 1920;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 100;
     const int max_depth = 50;
@@ -56,9 +62,9 @@ int main() {
     auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
     auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
     // Create objects
-    triangle tri(point3(0.0, 0.25, -1.0), point3(-1.0, -0.25, -1.5), point3(0.5, -0.25, -1.0), material_right);
     world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
-    world.add(make_shared<triangle>(tri));
+    world.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(-0.8, -0.8, -1.5), point3(-0.1, -1.0, -1.0), material_left));
+    world.add(make_shared<triangle>(point3(0.0, 0.25, -1.0), point3(1.0, -1.0, -1.5), point3(-0.1, -1.0, -1.0), material_left));
 
     // Camera
     camera cam;
