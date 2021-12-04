@@ -24,6 +24,10 @@ class vec3 {
         double y() const {return e[1];}
         double z() const {return e[2];}
 
+        double a() const {return e[0];}
+        double b() const {return e[1];}
+        double c() const {return e[2];}
+
         // Operators
 
         // Negative
@@ -137,6 +141,11 @@ inline vec3 cross(const vec3 &u, const vec3 &v) {
     return vec3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
                 u.e[2] * v.e[0] - u.e[0] * v.e[2],
                 u.e[0] * v.e[1] - u.e[1] * v.e[0]);
+}
+
+// Angle between
+inline double angle_between(const vec3 &u, const vec3 &v) {
+    return acos(dot(u, v)/(u.length() * v.length()));
 }
 
 // Unit Vector
