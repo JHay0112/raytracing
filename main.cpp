@@ -83,7 +83,7 @@ std::vector<color> scanline(const int line, const scene& image, const hittable_l
 int main() {
 
     // Image Parameters
-    struct scene image = {1920};
+    struct scene image = {640};
     hittable_list objects;
     // Set some materials
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
@@ -97,6 +97,7 @@ int main() {
 
     // Pixels
     std::future<std::vector<color>> pixels[image.height];
+    int completed_threads = 0;
 
     // Render
     // Setup file
@@ -107,11 +108,17 @@ int main() {
 
     // From bottom up
     for (int j = image.height - 1; j >= 0; --j) {
+        // Progress bar
+        std::cerr << "\rScanlines to initialise: " << j << " " << std::flush;
         pixels[j] = std::async(scanline, j, image, objects);
     }
 
+    std::cerr << "\n";
+
     // From bottom up
-    for (int j = image.height - 1; j >= 0; --j) {
+    for (int j = image.height - completed_threads - 1; j >= 0; --j) {
+        // Progress bar
+        std::cerr << "\rScanlines to collect: " << j << " " << std::flush;
         std::vector<color> line = pixels[j].get();
         // From left to right
         for (int i = 0; i < image.width; ++i) {
@@ -120,5 +127,5 @@ int main() {
     }
 
     // Ding!
-    std::cerr << "Done!\n";
+    std::cerr << "\nDone!\n";
 }
