@@ -13,7 +13,9 @@ pub use crate::vec3::Vec3;
 // Main
 
 fn main() {
-    let mut v = Vec3{e: [1.0, 2.0, 3.0]};
+    let mut v = Vec3::new(1.0, 2.0, 3.0);
+    let u = Vec3::new(0.0, 1.0, 0.0);
     v[0] = 2.0;
     println!("{}", v[0]);
+    println!("{}", v + u);
 }
