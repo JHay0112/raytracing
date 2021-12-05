@@ -27,7 +27,7 @@ impl Ray {
     }
 
     /// Compute the point on the ray at t
-    fn at(t: f32) -> Point3 {
+    fn at(self, t: f32) -> Point3 {
         return self.origin + t * self.direction;
     }
 }
