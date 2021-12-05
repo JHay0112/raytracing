@@ -9,6 +9,8 @@
 // Vectors
 mod vec3;
 pub use crate::vec3::{Vec3, Color, Point3};
+mod image;
+pub use crate::image::Image;
 
 // Main
 
@@ -17,4 +19,6 @@ fn main() {
     let u = Vec3::new(0.0, 1.0, 0.0);
     println!("{}", v + u);
     println!("{}", vec3::dot(u, v));
+
+    let img = Image::new(16.0/9.0, 1920);
 }
