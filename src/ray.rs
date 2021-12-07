@@ -7,8 +7,7 @@
 
 // Inclusions
 
-use vec3;
-pub use crate::vec3::{Vec3, Point3, Color};
+use crate::vec3::{Vec3, Point3, Color};
 
 // Classes
 
