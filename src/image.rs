@@ -8,6 +8,9 @@
 // Inclusions
 
 use std::ops;
+use std::path::Path;
+use std::fs::File;
+use std::io::prelude::*;
 use crate::vec3::Color;
 
 // Classes
@@ -25,12 +28,36 @@ pub struct Image {
 impl Image {
     /// Initialise a new image
     pub fn new(aspect_ratio: f32, width: u16) -> Self {
-        return Self{height: ((width as f32)/aspect_ratio) as u16, width: width, aspect_ratio: aspect_ratio, pixels: Vec::new()};
+        // Calculate height
+        let height: u16 = ((width as f32)/aspect_ratio) as u16;
+        // Create pixels vector
+        let mut pixels: Vec<Vec<Color>> = Vec::new();
+        // Insert empty colours
+        for _ in 0..height {
+            let mut v: Vec<Color> = Vec::new();
+            for _ in 0..width {
+                v.push(Color::new(0.0, 0.0, 0.0));
+            }
+            pixels.push(v);
+        }
+        
+        return Self{height: height, width: width, aspect_ratio: aspect_ratio, pixels: pixels};
     }
 
     /// Output a PPM File
-    pub fn ppm(filename: String) {
-
+    pub fn ppm(&self, filename: &str) -> std::io::Result<()> {
+        let path = Path::new(filename);
+        let mut file = File::create(&path)?;
+        let mut string = format!("P3\n{} {}\n255\n", self.width, self.height);
+        // Top to bottom
+        for i in (0..self.height).rev() {
+            // Left to right
+            for j in 0..self.width {
+                string += &format!("{}\n", self.pixels[i as usize][j as usize]);
+            }
+        }
+        file.write_all(string.as_bytes())?;
+        return Ok(());
     }
 }
 

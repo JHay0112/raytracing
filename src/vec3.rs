@@ -64,7 +64,7 @@ impl Default for Vec3 {
 /// Vector Display
 impl fmt::Display for Vec3 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return write!(f, "({}, {}, {})", self[0], self[1], self[2]);
+        return write!(f, "{} {} {}", self[0], self[1], self[2]);
     }
 }
 

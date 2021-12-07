@@ -21,4 +21,5 @@ fn main() {
     println!("{}", vec3::dot(u, v));
 
     let img = Image::new(16.0/9.0, 1920);
+    img.ppm("./test.ppm");
 }
