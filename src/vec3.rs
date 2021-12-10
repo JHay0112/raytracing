@@ -9,6 +9,7 @@
 
 use std::ops;
 use std::fmt;
+use std::cmp;
 
 // Classes
 
@@ -112,6 +113,13 @@ impl ops::Div<f32> for Vec3 {
     type Output = Self;
     fn div(self, scalar: f32) -> Self::Output {
         return Self::new(self[0] / scalar, self[1] / scalar, self[2] / scalar);
+    }
+}
+
+/// Vector Equality
+impl cmp::PartialEq for Vec3 {
+    fn eq(&self, &u: &Self) -> bool {
+        return self[0] == u[0] && self[1] == u[1] && self[2] == u[2];
     }
 }
 
