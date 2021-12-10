@@ -7,11 +7,12 @@
 
 // Inclusions
 
+// mod vec3; // Current not working, strange really
+use crate::vec3::{Color};
 use std::ops;
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
-use crate::vec3::Color;
 
 // Classes
 

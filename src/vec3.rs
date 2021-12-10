@@ -44,12 +44,12 @@ impl Vec3 {
 
     // Vector Attributes
     /// Magnitude of vector
-    fn magnitude(self) -> f32 {
+    pub fn magnitude(&self) -> f32 {
         return (self[0].powf(2.0) + self[1].powf(2.0) + self[2].powf(2.0)).sqrt();
     }
 
     /// Length of vector (alias of Vec3::magnitude())
-    fn length(self) -> f32 {
+    pub fn length(&self) -> f32 {
         return self.magnitude();
     }
 }

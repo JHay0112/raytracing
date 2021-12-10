@@ -5,8 +5,9 @@
 
 // Inclusions
 
-use crate::vec3::{Vec3, Point3, Color};
-use crate::ray::Ray;
+mod vec3;
+use crate::vec3::{Vec3, Point3};
+mod image;
 use crate::image::Image;
 
 // Classes
