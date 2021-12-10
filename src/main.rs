@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 /// Raytracer implemented in Rust
 /// Guided by Raytracing in One Weekend, https://raytracing.github.io
 /// 
