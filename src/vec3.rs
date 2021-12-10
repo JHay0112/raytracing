@@ -100,6 +100,13 @@ impl ops::Mul<f32> for Vec3 {
     }
 }
 
+impl ops::Mul<Vec3> for f32 {
+    type Output = Vec3;
+    fn mul(self, vector: Vec3) -> Self::Output {
+        return Vec3::new(vector[0] * self, vector[1] * self, vector[2] * self);
+    }
+}
+
 /// Vector Scalar Division
 impl ops::Div<f32> for Vec3 {
     type Output = Self;
