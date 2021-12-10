@@ -5,8 +5,11 @@
 
 // Inclusions
 
+#[path = "vec3.rs"]
 mod vec3;
 use crate::vec3::{Vec3, Point3};
+
+#[path = "image.rs"]
 mod image;
 use crate::image::Image;
 

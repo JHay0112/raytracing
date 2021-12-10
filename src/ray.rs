@@ -7,8 +7,9 @@
 
 // Inclusions
 
+#[path = "vec3.rs"]
 mod vec3;
-use crate::vec3::{Vec3, Point3, Color};
+use crate::vec3::{Vec3, Point3};
 
 // Classes
 
@@ -16,14 +17,14 @@ use crate::vec3::{Vec3, Point3, Color};
 /// 
 /// Lines defined by an origin and a direction vector
 pub struct Ray {
-    origin: Point3;
-    direction: Vec3;
+    origin: Point3,
+    direction: Vec3
 }
 
 impl Ray {
     /// Initialise a new ray
-    fn new(origin: Point3, direction Vec3) -> Self {
-        return Self{origin: origin, direction: vec3::normalize(direction)};
+    fn new(o: Point3, d: Vec3) -> Self {
+        return Self{origin: o, direction: d};
     }
 
     /// Compute the point on the ray at t

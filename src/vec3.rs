@@ -21,7 +21,7 @@ use std::fmt;
 /// v[0] = 9.0;
 /// assert_eq!(9.0, v[0]);
 /// ```
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     e: [f32; 3]
 }
