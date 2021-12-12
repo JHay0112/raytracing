@@ -8,11 +8,16 @@
 
 // Inclusions
 
-// Vectors
 mod vec3;
 use crate::vec3::{Vec3, Color, Point3};
+
 mod image;
 use crate::image::Image;
+
+mod ray;
+
+mod camera;
+use crate::camera::Camera;
 
 // Main
 
@@ -24,4 +29,6 @@ fn main() {
 
     let image = Image::new(16.0/9.0, 1920);
     image.ppm("./test.ppm");
+
+    let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), image, 2.0, 1.0);
 }

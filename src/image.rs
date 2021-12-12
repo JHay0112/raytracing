@@ -20,9 +20,9 @@ use std::io::prelude::*;
 /// 
 /// Stores pixels, info and functions for output.
 pub struct Image {
-    height: u16,
-    width: u16,
-    aspect_ratio: f32,
+    pub height: u16,
+    pub width: u16,
+    pub aspect_ratio: f32,
     pixels: Vec<Vec<Color>>
 }
 

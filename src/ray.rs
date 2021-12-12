@@ -23,12 +23,12 @@ pub struct Ray {
 
 impl Ray {
     /// Initialise a new ray
-    fn new(o: Point3, d: Vec3) -> Self {
+    pub fn new(o: Point3, d: Vec3) -> Self {
         return Self{origin: o, direction: d};
     }
 
     /// Compute the point on the ray at t
-    fn at(&self, t: f32) -> Point3 {
+    pub fn at(&self, t: f32) -> Point3 {
         return self.origin + t * self.direction;
     }
 }
