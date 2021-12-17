@@ -20,7 +20,7 @@ use crate::material
 // Enums
 
 /// Describes the intersection of a ray and object
-enum Intersection {
+pub enum Intersection {
     /// Intersection
     /// 
     /// # Attributes
@@ -40,11 +40,15 @@ enum Intersection {
 // Traits
 
 /// Intersection trait for objects
-trait Intersects {
+pub trait Intersects {
     /// Determines if a Ray intersects with the object
     /// 
     /// # Arguments
     /// 
     /// `r` - Ray to check for intersection
-    pub fn intersects(&self, &r: Ray) -> Intersection;
+    pub fn intersects(&self, &r: Ray, min: f32 = 0, max: f32 = f32::INFINITY) -> Intersection;
 }
+
+// Aliases
+
+pub type ShapeVec = Vec<Box<dyn Intersects>>;
