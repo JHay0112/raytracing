@@ -5,14 +5,9 @@
 
 // Inclusions
 
-mod objects;
-use crate::objects::{Intersection, Intersects};
-
-mod ray;
+use crate::shapes::{Intersection, Intersects};
 use crate::ray::{Ray};
-
-mod vec3;
-use crate::vec3::{Vec3, Point3};
+use crate::vec3::{Vec3, Point3, dot};
 
 // Classes
 
@@ -23,27 +18,27 @@ use crate::vec3::{Vec3, Point3};
 /// `origin` - The central point of the sphere.
 /// `radius` - The radius of the sphere.
 pub struct Sphere {
-    origin: Point3,
-    radius: f32
+    pub origin: Point3,
+    pub radius: f32
 }
 
 /// Sphere and Ray Intersection
 impl Intersects for Sphere {
-    pub fn intersects(&self, &r: Ray, min: f32, max: f32) -> Intersection {
+    fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Calculating Ray-Sphere Quadratic Intersection Equation
 
         // Get distance between origins
-        let separation: Vec3 = r.origin() - self.origin();
+        let separation: Vec3 = r.origin - self.origin;
         // at^2 + bt + c = 0
-        let a: f32 = vec3::dot(r.direction(), r.direction()); // If a point is on the sphere then this == (radius)^2
-        let half_b: f32 = vec3::dot(separation, r.direction()); 
+        let a: f32 = dot(r.direction, r.direction); // If a point is on the sphere then this == (radius)^2
+        let half_b: f32 = dot(separation, r.direction); 
         let c: f32 = f32::sqrt(separation.magnitude()) - self.radius * self.radius;
         // Discriminant of quadratic
         let discriminant = half_b * half_b - a * c;
         
         // If the discriminant is less than zero
         // There are no roots, so there is no intersection
-        if (discriminant < 0) {
+        if (discriminant < 0.0) {
             return Intersection::False;
         }
 
@@ -54,7 +49,7 @@ impl Intersects for Sphere {
         // If this is outside the range
         if (root < min || max < root) {
             // Then check the orther root
-            root = (-half_b + sqrtd) / a;
+            let root: f32 = (-half_b + sqrtd) / a;
             // If this is also outside the range then there is no intersection!
             if (root < min || max < root) {
                 return Intersection::False;
@@ -64,7 +59,7 @@ impl Intersects for Sphere {
         // Else we can record a hit!
         let intersection: Intersection = Intersection::True{
             point: r.at(root),
-            normal: (root - self.center) / self.radius
+            normal: (r.at(root) - self.origin) / self.radius
         };
 
         return intersection;

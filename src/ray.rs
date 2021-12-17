@@ -17,8 +17,8 @@ use crate::vec3::{Vec3, Point3};
 /// 
 /// Lines defined by an origin and a direction vector
 pub struct Ray {
-    origin: Point3,
-    direction: Vec3
+    pub origin: Point3,
+    pub direction: Vec3
 }
 
 impl Ray {

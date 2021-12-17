@@ -5,12 +5,9 @@
 
 // Inclusions
 
-#[path = "../ray.rs"]
-mod ray;
-use crate::ray::Ray;
+pub mod sphere;
 
-#[path = "../vec3.rs"]
-mod vec3;
+use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3};
 
 // Enums

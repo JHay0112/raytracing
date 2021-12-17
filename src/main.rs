@@ -20,8 +20,8 @@ use crate::ray::{Ray};
 mod camera;
 use crate::camera::{Camera};
 
-mod objects;
-
+mod shapes;
+use crate::shapes::sphere::{Sphere};
 
 // Main
 
