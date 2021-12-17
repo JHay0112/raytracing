@@ -13,10 +13,6 @@ use crate::ray::Ray;
 mod vec3;
 use crate::vec3::{Vec3, Point3};
 
-#[path = "material.rs"]
-mod material;
-use crate::material
-
 // Enums
 
 /// Describes the intersection of a ray and object
@@ -27,11 +23,9 @@ pub enum Intersection {
     /// 
     /// `point` - The point at which the intersection occured.
     /// `normal` - Normal vector of the surface at the point of intersection.
-    /// `material` - Reference to the material
     True {
         point: Point3,
-        normal: Vec3,
-        material: &Material
+        normal: Vec3
     },
     /// No Intersection
     False

@@ -22,13 +22,6 @@ use crate::camera::Camera;
 // Main
 
 fn main() {
-    let v = Vec3::new(1.0, 2.0, 3.0);
-    let u = Vec3::new(0.0, 1.0, 0.0);
-    println!("{}", v + u);
-    println!("{}", vec3::dot(u, v));
-
     let image = Image::new(16.0/9.0, 1920);
-    image.ppm("./test.ppm");
-
     let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), image, 2.0, 1.0);
 }

@@ -11,9 +11,6 @@ use crate::objects::{Intersection, Intersects};
 mod ray;
 use crate::ray::{Ray};
 
-mod material;
-use crate::material::{Material};
-
 mod vec3;
 use crate::vec3::{Vec3, Point3};
 
@@ -27,8 +24,7 @@ use crate::vec3::{Vec3, Point3};
 /// `radius` - The radius of the sphere.
 pub struct Sphere {
     origin: Point3,
-    radius: f32,
-    material: &Material
+    radius: f32
 }
 
 /// Sphere and Ray Intersection
@@ -68,8 +64,7 @@ impl Intersects for Sphere {
         // Else we can record a hit!
         let intersection: Intersection = Intersection::True{
             point: r.at(root),
-            normal: (root - self.center) / self.radius,
-            material: self.material
+            normal: (root - self.center) / self.radius
         };
 
         return intersection;
