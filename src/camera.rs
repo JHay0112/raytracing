@@ -11,9 +11,9 @@ use crate::ray::Ray;
 
 // Classes
 
-pub struct Camera {
+pub struct Camera<'a> {
     origin: Point3,
-    image: Image,
+    image: &'a Image,
     viewport_height: f32,
     viewport_width: f32,
     focal_length: f32,
@@ -22,9 +22,9 @@ pub struct Camera {
     lower_left_corner: Vec3
 }
 
-impl Camera {
+impl<'a> Camera<'a> {
     /// Instantiate a new Camera
-    pub fn new(origin: Point3, image: Image, vh: f32, focal_length: f32) -> Self {
+    pub fn new(origin: Point3, image: &'a Image, vh: f32, focal_length: f32) -> Self {
 
         // Derive unknowns
         // Viewport width
@@ -36,7 +36,7 @@ impl Camera {
         // Lower left corner
         let llc = origin - hoz/2.0 - vert/2.0 - Vec3::new(0.0, 0.0, focal_length);
 
-        return Self{
+        return Self {
             origin: origin, 
             image: image,
             viewport_height: vh,

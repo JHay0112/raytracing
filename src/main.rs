@@ -27,5 +27,5 @@ use crate::shapes::sphere::{Sphere};
 
 fn main() {
     let image = Image::new(16.0/9.0, 1920);
-    let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), image, 2.0, 1.0);
+    let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), &image, 2.0, 1.0);
 }
