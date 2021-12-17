@@ -12,12 +12,16 @@ mod vec3;
 use crate::vec3::{Vec3, Color, Point3};
 
 mod image;
-use crate::image::Image;
+use crate::image::{Image};
 
 mod ray;
+use crate::ray::{Ray};
 
 mod camera;
-use crate::camera::Camera;
+use crate::camera::{Camera};
+
+mod objects;
+
 
 // Main
 

@@ -29,7 +29,7 @@ pub struct Sphere {
 
 /// Sphere and Ray Intersection
 impl Intersects for Sphere {
-    pub fn intersects(&self, &r: Ray, min: f32 = 0, max: f32 = f32::INFINITY) -> Intersection {
+    pub fn intersects(&self, &r: Ray, min: f32, max: f32) -> Intersection {
         // Calculating Ray-Sphere Quadratic Intersection Equation
 
         // Get distance between origins

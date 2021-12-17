@@ -40,7 +40,7 @@ pub trait Intersects {
     /// # Arguments
     /// 
     /// `r` - Ray to check for intersection
-    pub fn intersects(&self, &r: Ray, min: f32 = 0, max: f32 = f32::INFINITY) -> Intersection;
+    fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection;
 }
 
 // Aliases
