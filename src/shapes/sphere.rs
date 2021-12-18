@@ -6,6 +6,7 @@
 // Inclusions
 
 use crate::shapes::{Intersection, Shape};
+use crate::shapes::material::{Material};
 use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3, dot};
 
@@ -19,18 +20,19 @@ use crate::vec3::{Vec3, Point3, dot};
 /// `radius` - The radius of the sphere.
 pub struct Sphere {
     pub origin: Point3,
-    pub radius: f32
+    pub radius: f32,
+    pub material: Box<dyn Material>
 }
 
 impl Sphere {
     /// Construct a sphere
-    pub fn new(origin: Point3, radius: f32) -> Self {
-        return Self{origin: origin, radius: radius};
+    pub fn new(origin: Point3, radius: f32, material: Box<dyn Material>) -> Self {
+        return Self{origin: origin, radius: radius, material: material};
     }
 
     /// Construct a sphere in a Box<dyn Intersects>
-    pub fn boxed(origin: Point3, radius: f32) -> Box<dyn Shape> {
-        return Box::new(Self::new(origin, radius));
+    pub fn boxed(origin: Point3, radius: f32, material: Box<dyn Material>) -> Box<dyn Shape> {
+        return Box::new(Self::new(origin, radius, material));
     }
 }
 
@@ -72,7 +74,8 @@ impl Shape for Sphere {
         let intersection = Intersection::True {
             point: r.at(root),
             normal: (r.at(root) - self.origin) / self.radius,
-            t: root
+            t: root,
+            material: &self.material
         };
 
         return intersection;

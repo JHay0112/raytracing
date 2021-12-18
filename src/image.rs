@@ -10,6 +10,7 @@
 // mod vec3; // Current not working, strange really
 use crate::vec3::{Color};
 use std::ops;
+use num::clamp;
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
@@ -54,7 +55,14 @@ impl Image {
         for i in (0..self.height).rev() {
             // Left to right
             for j in 0..self.width {
-                string += &format!("{}\n", self.pixels[i as usize][j as usize]);
+                // Get pixel
+                let pixel = self.pixels[i as usize][j as usize];
+                // Get colours
+                let r = clamp(pixel[0], 0.0, 1.0) * 255.0;
+                let g = clamp(pixel[1], 0.0, 1.0) * 255.0;
+                let b = clamp(pixel[2], 0.0, 1.0) * 255.0;
+                // Write it
+                string += &format!("{} {} {}\n", r, g, b);
             }
         }
         file.write_all(string.as_bytes())?;

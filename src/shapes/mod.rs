@@ -6,14 +6,16 @@
 // Inclusions
 
 pub mod sphere;
+pub mod material;
 
+use crate::material::{Material};
 use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3};
 
 // Enums
 
 /// Describes the intersection of a ray and object
-pub enum Intersection {
+pub enum Intersection<'a> {
     /// Intersection
     /// 
     /// # Attributes
@@ -21,10 +23,12 @@ pub enum Intersection {
     /// `point` - The point at which the intersection occured.
     /// `normal` - Normal vector of the surface at the point of intersection.
     /// `t` - The scalar applied to the ray's direction vector. A relative form of distance.
+    /// `material` - Boxed material associated with the intersection.
     True {
         point: Point3,
         normal: Vec3,
-        t: f32
+        t: f32,
+        material: &'a Box<dyn Material>
     },
     /// No Intersection
     False
@@ -97,7 +101,7 @@ impl ShapeVec {
                         },
                     }
                 },
-                _ => (),  // No intersection, nothing changes
+                _ => {},  // No intersection, nothing changes
             }
         }
 

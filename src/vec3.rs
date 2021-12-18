@@ -10,6 +10,8 @@
 use std::ops;
 use std::fmt;
 use std::cmp;
+use rand::Rng;
+use rand::thread_rng;
 
 // Classes
 
@@ -53,6 +55,20 @@ impl Vec3 {
     pub fn length(&self) -> f32 {
         return self.magnitude();
     }
+
+    /// Vector with random values in range
+    pub fn random(min: f32, max: f32) -> Self {
+        // Setup RNG
+        let mut rng = thread_rng();
+        // Create and return vec3
+        return Self::new(rng.gen_range(min..max), rng.gen_range(min..max), rng.gen_range(min..max));
+    }
+
+    /// Checks if Vector is near zero
+    pub fn near_zero(&self) -> bool {
+        const S: f32 = 1e-8;
+        return (f32::abs(self[0]) < S) && (f32::abs(self[1]) < S) && (f32::abs(self[2]) < S);
+    }
 }
 
 /// Default Vector
@@ -90,6 +106,14 @@ impl ops::Sub for Vec3 {
     type Output = Self;
     fn sub(self, other: Vec3) -> Self::Output {
         return Self::new(self[0] - other[0], self[1] - other[1], self[2] - other[2]);
+    }
+}
+
+/// Vector Itemwise Multiplication
+impl ops::Mul<Vec3> for Vec3 {
+    type Output = Self;
+    fn mul(self, other: Vec3) -> Self::Output {
+        return Self::new(self[0] * other[0], self[1] * other[1], self[2] * other[2]);
     }
 }
 
@@ -131,6 +155,12 @@ impl ops::Index<usize> for Vec3 {
     }
 }
 
+impl ops::IndexMut<usize> for Vec3 {
+    fn index_mut(&mut self, i: usize) -> &mut f32 {
+        return &mut self.e[i];
+    }
+}
+
 // Functions
 
 /// Vector Dot Product
@@ -154,6 +184,27 @@ pub fn normalize(u: Vec3) -> Vec3 {
 /// Angle between two vectors
 pub fn angle_between(u: Vec3, v: Vec3) -> f32 {
     return (dot(u, v)/(u.magnitude() * v.magnitude())).acos();
+}
+
+// Random Functions
+
+/// Produces a random unit vector in a unit sphere.
+pub fn random_unit_sphere_vector() -> Vec3 {
+    // Setup random number generator
+    let mut rng = rand::thread_rng();
+    let mut p: Vec3;
+    // Continue producing until we get a valid vector
+    loop {
+        // Create random vector in unit cube
+        p = Vec3::random(-1.0, 1.0);
+        if (f32::powf(p.length(), 2.0) >= 1.0) {
+            // Outside sphere
+            continue; // Go round again
+        }
+        // In unit sphere
+        break; // Let's use it
+    }
+    return normalize(p); // Return normalized vector
 }
 
 // Aliases
