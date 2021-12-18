@@ -5,7 +5,7 @@
 
 // Inclusions
 
-use crate::shapes::{Intersection, Intersects};
+use crate::shapes::{Intersection, Shape};
 use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3, dot};
 
@@ -29,13 +29,13 @@ impl Sphere {
     }
 
     /// Construct a sphere in a Box<dyn Intersects>
-    pub fn boxed(origin: Point3, radius: f32) -> Box<dyn Intersects> {
+    pub fn boxed(origin: Point3, radius: f32) -> Box<dyn Shape> {
         return Box::new(Self::new(origin, radius));
     }
 }
 
 /// Sphere and Ray Intersection
-impl Intersects for Sphere {
+impl Shape for Sphere {
     fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Calculating Ray-Sphere Quadratic Intersection Equation
 
@@ -69,9 +69,10 @@ impl Intersects for Sphere {
         }
 
         // Else we can record a hit!
-        let intersection: Intersection = Intersection::True{
+        let intersection: Intersection = Intersection::True {
             point: r.at(root),
-            normal: (r.at(root) - self.origin) / self.radius
+            normal: (r.at(root) - self.origin) / self.radius,
+            t: root
         };
 
         return intersection;
