@@ -46,12 +46,12 @@ fn ray_color(r: &Ray, objects: &ShapeVec, depth: u8) -> Color {
             match scattered {
                 material::Scatter::False => {
                     // No scattering
+                    // This case should never run
                     return Color::new(0.0, 0.0, 0.0);
                 },
                 material::Scatter::True{ray, attenuation} => {
                     // There is scattering
                     return *attenuation * ray_color(&ray, objects, depth - 1);
-                    //return *attenuation;
                 }
             }
         },
@@ -69,7 +69,7 @@ fn ray_color(r: &Ray, objects: &ShapeVec, depth: u8) -> Color {
 fn main() {
     // Setup Scene
     let mut image = Image::new(16.0/9.0, 400);
-    let samples = 1;
+    let samples = 20;
     let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), image.aspect_ratio, 2.0, 1.0);
     let mut objects = ShapeVec::new();
 
@@ -97,10 +97,9 @@ fn main() {
                 let v: f32 = ((i as f32) + rng.gen_range(0.0..1.0))/((image.height - 1) as f32); // Propotion down
                 let r: Ray = camera.get_ray(u, v);
                 // Let's see if a ray hits any objects
-                pixel = pixel + ray_color(&r, &objects, 50);
+                pixel = pixel + ray_color(&r, &objects, 10);
             }
             // Normalize pixel, gamma correct and output it
-            pixel = pixel/(samples as f32);
             let scale = 1.0/(samples as f32);
             pixel[0] = f32::sqrt(pixel[0] * scale);
             pixel[1] = f32::sqrt(pixel[1] * scale);

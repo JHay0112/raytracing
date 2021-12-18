@@ -58,9 +58,9 @@ impl Image {
                 // Get pixel
                 let pixel = self.pixels[i as usize][j as usize];
                 // Get colours
-                let r = clamp(pixel[0], 0.0, 1.0) * 255.0;
-                let g = clamp(pixel[1], 0.0, 1.0) * 255.0;
-                let b = clamp(pixel[2], 0.0, 1.0) * 255.0;
+                let r = (clamp(pixel[0], 0.0, 0.999) * 255.999) as u8;
+                let g = (clamp(pixel[1], 0.0, 0.999) * 255.999) as u8;
+                let b = (clamp(pixel[2], 0.0, 0.999) * 255.999) as u8;
                 // Write it
                 string += &format!("{} {} {}\n", r, g, b);
             }
