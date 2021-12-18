@@ -21,6 +21,7 @@ mod camera;
 use crate::camera::{Camera};
 
 mod shapes;
+use crate::shapes::{ShapeVec, Intersects};
 use crate::shapes::sphere::{Sphere};
 
 // Main
@@ -28,4 +29,7 @@ use crate::shapes::sphere::{Sphere};
 fn main() {
     let image = Image::new(16.0/9.0, 1920);
     let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), &image, 2.0, 1.0);
+    let mut objects = ShapeVec::new();
+
+    objects.push(Sphere::boxed(Point3::new(0.0, 0.0, -2.0), 1.0));
 }

@@ -22,6 +22,18 @@ pub struct Sphere {
     pub radius: f32
 }
 
+impl Sphere {
+    /// Construct a sphere
+    pub fn new(origin: Point3, radius: f32) -> Self {
+        return Self{origin: origin, radius: radius};
+    }
+
+    /// Construct a sphere in a Box<dyn Intersects>
+    pub fn boxed(origin: Point3, radius: f32) -> Box<dyn Intersects> {
+        return Box::new(Self::new(origin, radius));
+    }
+}
+
 /// Sphere and Ray Intersection
 impl Intersects for Sphere {
     fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
