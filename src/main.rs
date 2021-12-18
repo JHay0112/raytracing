@@ -30,13 +30,13 @@ use rand::prelude::*;
 
 fn main() {
     // Setup Scene
-    let image = Image::new(16.0/9.0, 400);
-    let samples = 50;
-    let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), &image, 2.0, 1.0);
+    let mut image = Image::new(16.0/9.0, 400);
+    let samples = 1;
+    let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), image.aspect_ratio, 2.0, 1.0);
     let mut objects = ShapeVec::new();
 
     // Add objects
-    objects.push(Sphere::boxed(Point3::new(0.0, 0.0, -2.0), 1.0));
+    objects.push(Sphere::boxed(Point3::new(0.0, -100.5, -1.0), 100.0));
 
     // Random number generator
     let mut rng = rand::thread_rng();
@@ -55,10 +55,19 @@ fn main() {
                 let r: Ray = camera.get_ray(u, v);
                 // Let's see if a ray hits any objects
                 let intersection = objects.intersects(&r, 0.0, f32::INFINITY);
+
+                match intersection {
+                    Intersection::False => {
+                        image[i as usize][j as usize] = Color::new(0.0, 0.0, 0.0);
+                    },
+                    Intersection::True{..} => {
+                        image[i as usize][j as usize] = Color::new(255.0, 255.0, 255.0);
+                    }
+                }
             }
         }
     }
 
     // Output image
-    image.ppm("test.ppm");
+    image.ppm("out.ppm");
 }

@@ -11,9 +11,8 @@ use crate::ray::Ray;
 
 // Classes
 
-pub struct Camera<'a> {
+pub struct Camera {
     origin: Point3,
-    image: &'a Image,
     viewport_height: f32,
     viewport_width: f32,
     focal_length: f32,
@@ -22,13 +21,13 @@ pub struct Camera<'a> {
     lower_left_corner: Vec3
 }
 
-impl<'a> Camera<'a> {
+impl Camera {
     /// Instantiate a new Camera
-    pub fn new(origin: Point3, image: &'a Image, vh: f32, focal_length: f32) -> Self {
+    pub fn new(origin: Point3, aspect_ratio: f32, vh: f32, focal_length: f32) -> Self {
 
         // Derive unknowns
         // Viewport width
-        let vw: f32 = image.aspect_ratio * vh;
+        let vw: f32 = aspect_ratio * vh;
         // Horizontal
         let hoz = Vec3::new(vw, 0.0, 0.0);
         // Vertical
@@ -38,7 +37,6 @@ impl<'a> Camera<'a> {
 
         return Self {
             origin: origin, 
-            image: image,
             viewport_height: vh,
             viewport_width: vw,
             focal_length: focal_length,

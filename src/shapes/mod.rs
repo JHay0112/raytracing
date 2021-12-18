@@ -71,35 +71,36 @@ impl ShapeVec {
     /// `r` - The ray to determine intersection with.
     pub fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Store closest record
-        let closest: Intersection = Intersection::False;
+        let mut closest: Intersection = Intersection::False;
         // Go through shapes in vector
         for shape in &self.e {
             // Create a hit record
             let record = shape.intersects(r, min, max);
             // Check whether there was a hit
             match record {
-                Intersection::False => (),  // No intersection, nothing changes
-                Intersection::True{t, ..} => { // There is an intersection
+                Intersection::True {t, ..} => { // There is an intersection
                     // Rename t to something else
                     let record_t = t;
                     // Check the state of the closest hit
                     match closest {
-                        Intersection::False => {
-                            // No closest record, replace it
-                            let closest = record;
-                        },
-                        Intersection::True{t, ..} => { // There is a closest record
+                        Intersection::True {t, ..} => { // There is a closest record
                             // Rename t to something else
                             let closest_t = t;
                             if (closest_t > record_t) {
                                 // Closest is further than record so replace
-                                let closest = record;
+                                closest = record;
                             }
                         }
+                        _ => {
+                            // No closest record, replace it
+                            closest = record;
+                        },
                     }
-                }
+                },
+                _ => (),  // No intersection, nothing changes
             }
         }
+
         // Return the closest record
         return closest;
     }

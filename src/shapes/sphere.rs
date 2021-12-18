@@ -44,7 +44,7 @@ impl Shape for Sphere {
         // at^2 + bt + c = 0
         let a: f32 = dot(r.direction, r.direction); // If a point is on the sphere then this == (radius)^2
         let half_b: f32 = dot(separation, r.direction); 
-        let c: f32 = f32::sqrt(separation.magnitude()) - self.radius * self.radius;
+        let c: f32 = f32::powf(separation.magnitude(), 2.0) - self.radius * self.radius;
         // Discriminant of quadratic
         let discriminant = half_b * half_b - a * c;
         
@@ -69,7 +69,7 @@ impl Shape for Sphere {
         }
 
         // Else we can record a hit!
-        let intersection: Intersection = Intersection::True {
+        let intersection = Intersection::True {
             point: r.at(root),
             normal: (r.at(root) - self.origin) / self.radius,
             t: root
