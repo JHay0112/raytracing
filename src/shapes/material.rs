@@ -51,6 +51,9 @@ pub struct Lambertian {
 }
 
 impl Lambertian {
+    pub fn new(albedo: Color) -> Self {
+        return Self{albedo: albedo};
+    }
     /// Create a boxed material
     pub fn boxed(albedo: Color) -> Box<dyn Material> {
         return Box::new(Lambertian{albedo: albedo});

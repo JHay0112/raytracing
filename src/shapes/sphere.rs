@@ -21,17 +21,16 @@ use crate::vec3::{Vec3, Point3, dot};
 pub struct Sphere<'a> {
     pub origin: Point3,
     pub radius: f32,
-    pub material: &'a Box<dyn Material>
+    pub material: &'a dyn Material
 }
 
 impl<'a> Sphere<'a> {
     /// Construct a sphere
-    pub fn new(origin: Point3, radius: f32, material: &'a Box<dyn Material>) -> Self {
+    pub fn new(origin: Point3, radius: f32, material: &'a dyn Material) -> Self {
         return Self{origin: origin, radius: radius, material: material};
     }
-
-    /// Construct a sphere in a Box<dyn Intersects>
-    pub fn boxed(origin: Point3, radius: f32, material: &'a Box<dyn Material>) -> Box<dyn Shape> {
+    /// Construct a sphere in a box
+    pub fn boxed(origin: Point3, radius: f32, material: &'a dyn Material) -> Box<dyn Shape + 'a> {
         return Box::new(Self::new(origin, radius, material));
     }
 }
@@ -75,7 +74,7 @@ impl<'a> Shape for Sphere<'a> {
             point: r.at(root),
             normal: (r.at(root) - self.origin) / self.radius,
             t: root,
-            material: &self.material
+            material: self.material
         };
 
         return intersection;

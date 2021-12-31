@@ -24,12 +24,12 @@ pub enum Intersection<'a> {
     /// `point` - The point at which the intersection occured.
     /// `normal` - Normal vector of the surface at the point of intersection.
     /// `t` - The scalar applied to the ray's direction vector. A relative form of distance.
-    /// `material` - Boxed material associated with the intersection.
+    /// `material` - Material associated with the intersection.
     True {
         point: Point3,
         normal: Vec3,
         t: f32,
-        material: &'a Box<dyn Material>
+        material: &'a dyn Material
     },
     /// No Intersection
     False
@@ -57,10 +57,10 @@ pub struct ShapeVec {
 impl ShapeVec {
     /// Initialise an empty shape vector
     pub fn new() -> Self {
-        return Self {e: Vec::new()};
+        return Self{e: Vec::new()};
     }
 
-    /// Push a (boxed) Shape onto the vector
+    /// Push a Shape onto the vector
     /// 
     /// # Arguments
     /// 
