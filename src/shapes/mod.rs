@@ -6,6 +6,7 @@
 // Inclusions
 
 pub mod sphere;
+pub mod triangle;
 pub mod material;
 
 use crate::material::{Material};
@@ -76,6 +77,7 @@ impl ShapeVec {
     pub fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Store closest record
         let mut closest: Intersection = Intersection::False;
+        let mut max = max;
         // Go through shapes in vector
         for shape in &self.e {
             // Create a hit record
@@ -93,11 +95,13 @@ impl ShapeVec {
                             if (closest_t > record_t) {
                                 // Closest is further than record so replace
                                 closest = record;
+                                max = record_t;
                             }
                         }
                         _ => {
                             // No closest record, replace it
                             closest = record;
+                            max = record_t;
                         },
                     }
                 },
