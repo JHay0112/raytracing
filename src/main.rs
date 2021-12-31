@@ -23,6 +23,7 @@ use crate::camera::{Camera};
 mod shapes;
 use crate::shapes::{ShapeVec, Intersection};
 use crate::shapes::sphere::{Sphere};
+use crate::shapes::triangle::{Triangle};
 use crate::shapes::material;
 
 use rand::Rng;
@@ -69,7 +70,8 @@ fn ray_color(r: &Ray, objects: &ShapeVec, depth: u8) -> Color {
 fn main() {
     // Setup Scene
     let mut image = Image::new(16.0/9.0, 400);
-    let samples = 20;
+    let samples = 30;
+    let depth = 20;
     let camera = Camera::new(Point3::new(0.0, 0.0, 0.0), image.aspect_ratio, 2.0, 1.0);
     let mut objects = ShapeVec::new();
 
@@ -79,7 +81,8 @@ fn main() {
 
     // Add objects
     objects.push(Sphere::boxed(Point3::new(0.0, -100.5, -1.0), 100.0, mat1));
-    objects.push(Sphere::boxed(Point3::new(0.0, 0.0, -2.0), 1.0, mat2));
+    objects.push(Triangle::boxed(Point3::new(0.0, 0.25, -1.0), Point3::new(-0.8, -0.8, -1.5), Point3::new(-0.1, -1.0, -1.0), mat2));
+    //objects.push(Triangle::boxed(Point3::new(0.0, 0.25, -1.0), Point3::new(1.0, -1.0, -1.5), Point3::new(-0.1, -1.0, -1.0), &mat2));
 
     // Random number generator
     let mut rng = rand::thread_rng();
@@ -97,7 +100,7 @@ fn main() {
                 let v: f32 = ((i as f32) + rng.gen_range(0.0..1.0))/((image.height - 1) as f32); // Propotion down
                 let r: Ray = camera.get_ray(u, v);
                 // Let's see if a ray hits any objects
-                pixel = pixel + ray_color(&r, &objects, 10);
+                pixel = pixel + ray_color(&r, &objects, depth);
             }
             // Normalize pixel, gamma correct and output it
             let scale = 1.0/(samples as f32);
