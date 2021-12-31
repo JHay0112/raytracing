@@ -18,26 +18,26 @@ use crate::vec3::{Vec3, Point3, dot};
 /// 
 /// `origin` - The central point of the sphere.
 /// `radius` - The radius of the sphere.
-pub struct Sphere {
+pub struct Sphere<'a> {
     pub origin: Point3,
     pub radius: f32,
-    pub material: Box<dyn Material>
+    pub material: &'a Box<dyn Material>
 }
 
-impl Sphere {
+impl<'a> Sphere<'a> {
     /// Construct a sphere
-    pub fn new(origin: Point3, radius: f32, material: Box<dyn Material>) -> Self {
+    pub fn new(origin: Point3, radius: f32, material: &'a Box<dyn Material>) -> Self {
         return Self{origin: origin, radius: radius, material: material};
     }
 
     /// Construct a sphere in a Box<dyn Intersects>
-    pub fn boxed(origin: Point3, radius: f32, material: Box<dyn Material>) -> Box<dyn Shape> {
+    pub fn boxed(origin: Point3, radius: f32, material: &'a Box<dyn Material>) -> Box<dyn Shape> {
         return Box::new(Self::new(origin, radius, material));
     }
 }
 
 /// Sphere and Ray Intersection
-impl Shape for Sphere {
+impl<'a> Shape for Sphere<'a> {
     fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Calculating Ray-Sphere Quadratic Intersection Equation
 

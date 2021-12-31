@@ -80,9 +80,9 @@ fn main() {
     let mat2 = material::Lambertian::boxed(Color::new(0.7, 0.0, 0.0));
 
     // Add objects
-    objects.push(Sphere::boxed(Point3::new(0.0, -100.5, -1.0), 100.0, mat1));
-    objects.push(Triangle::boxed(Point3::new(0.0, 0.25, -1.0), Point3::new(-0.8, -0.8, -1.5), Point3::new(-0.1, -1.0, -1.0), mat2));
-    //objects.push(Triangle::boxed(Point3::new(0.0, 0.25, -1.0), Point3::new(1.0, -1.0, -1.5), Point3::new(-0.1, -1.0, -1.0), &mat2));
+    objects.push(Sphere::boxed(Point3::new(0.0, -100.5, -1.0), 100.0, &mat1));
+    objects.push(Triangle::boxed(Point3::new(0.0, 0.25, -1.0), Point3::new(-0.8, -0.8, -1.5), Point3::new(-0.1, -1.0, -1.0), &mat2));
+    objects.push(Triangle::boxed(Point3::new(0.0, 0.25, -1.0), Point3::new(1.0, -1.0, -1.5), Point3::new(-0.1, -1.0, -1.0), &mat2));
 
     // Random number generator
     let mut rng = rand::thread_rng();
