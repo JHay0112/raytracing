@@ -191,7 +191,7 @@ pub fn angle_between(u: Vec3, v: Vec3) -> f32 {
 /// Produces a random unit vector in a unit sphere.
 pub fn random_unit_sphere_vector() -> Vec3 {
     // Setup random number generator
-    let mut rng = rand::thread_rng();
+    let rng = rand::thread_rng();
     let mut p: Vec3;
     // Continue producing until we get a valid vector
     loop {
