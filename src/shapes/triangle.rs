@@ -10,6 +10,8 @@ use crate::shapes::material::{Material};
 use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3, angle_between, cross, dot};
 
+use std::rc::{Rc};
+
 // Classes
 
 /// Defines a Triangle in 3D Space
@@ -18,24 +20,24 @@ use crate::vec3::{Vec3, Point3, angle_between, cross, dot};
 /// 
 /// `e` - Array of the three points in space that define the triangle. 
 /// `material` - Box of material used by triangle.
-pub struct Triangle<'a> {
+pub struct Triangle {
     e: [Point3; 3],
-    material: &'a dyn Material
+    material: Rc<dyn Material>
 }
 
-impl<'a> Triangle<'a> {
+impl Triangle {
     /// Construct a Triangle
-    pub fn new(a: Point3, b: Point3, c: Point3, material: &'a dyn Material) -> Triangle<'a> {
+    pub fn new(a: Point3, b: Point3, c: Point3, material: Rc<dyn Material>) -> Triangle {
         return Self{e: [a, b, c], material: material};
     }
     /// Construct a sphere in a box
-    pub fn boxed(a: Point3, b: Point3, c: Point3, material: &'a dyn Material) -> Box<dyn Shape + 'a> {
+    pub fn boxed(a: Point3, b: Point3, c: Point3, material: Rc<dyn Material>) -> Box<dyn Shape> {
         return Box::new(Self::new(a, b, c, material));
     }
 }
 
 /// Triangle and Ray Intersection
-impl<'a> Shape for Triangle<'a> {
+impl Shape for Triangle {
     fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Get the triangle plane normal
         let n: Vec3 = cross(self.e[1] - self.e[0], self.e[2] - self.e[0]);
@@ -81,7 +83,7 @@ impl<'a> Shape for Triangle<'a> {
             point: p,
             normal: n,
             t: t,
-            material: self.material
+            material: &self.material
         };
     }
 }

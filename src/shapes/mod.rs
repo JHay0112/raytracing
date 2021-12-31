@@ -13,6 +13,8 @@ use crate::material::{Material};
 use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3};
 
+use std::rc::{Rc};
+
 // Enums
 
 /// Describes the intersection of a ray and object
@@ -29,7 +31,7 @@ pub enum Intersection<'a> {
         point: Point3,
         normal: Vec3,
         t: f32,
-        material: &'a dyn Material
+        material: &'a Rc<dyn Material>
     },
     /// No Intersection
     False

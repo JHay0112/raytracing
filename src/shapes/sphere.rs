@@ -10,6 +10,8 @@ use crate::shapes::material::{Material};
 use crate::ray::{Ray};
 use crate::vec3::{Vec3, Point3, dot};
 
+use std::rc::{Rc};
+
 // Classes
 
 /// Defines a Sphere in 3D Space
@@ -18,25 +20,25 @@ use crate::vec3::{Vec3, Point3, dot};
 /// 
 /// `origin` - The central point of the sphere.
 /// `radius` - The radius of the sphere.
-pub struct Sphere<'a> {
+pub struct Sphere {
     pub origin: Point3,
     pub radius: f32,
-    pub material: &'a dyn Material
+    pub material: Rc<dyn Material>
 }
 
-impl<'a> Sphere<'a> {
+impl Sphere {
     /// Construct a sphere
-    pub fn new(origin: Point3, radius: f32, material: &'a dyn Material) -> Self {
+    pub fn new(origin: Point3, radius: f32, material: Rc<dyn Material>) -> Self {
         return Self{origin: origin, radius: radius, material: material};
     }
     /// Construct a sphere in a box
-    pub fn boxed(origin: Point3, radius: f32, material: &'a dyn Material) -> Box<dyn Shape + 'a> {
+    pub fn boxed(origin: Point3, radius: f32, material: Rc<dyn Material>) -> Box<dyn Shape> {
         return Box::new(Self::new(origin, radius, material));
     }
 }
 
 /// Sphere and Ray Intersection
-impl<'a> Shape for Sphere<'a> {
+impl Shape for Sphere {
     fn intersects(&self, r: &Ray, min: f32, max: f32) -> Intersection {
         // Calculating Ray-Sphere Quadratic Intersection Equation
 
@@ -74,7 +76,7 @@ impl<'a> Shape for Sphere<'a> {
             point: r.at(root),
             normal: (r.at(root) - self.origin) / self.radius,
             t: root,
-            material: self.material
+            material: &self.material
         };
 
         return intersection;

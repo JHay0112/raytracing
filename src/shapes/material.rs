@@ -9,6 +9,8 @@ use crate::ray::{Ray};
 use crate::vec3::{Color, random_unit_sphere_vector};
 use crate::shapes::{Intersection};
 
+use std::rc::{Rc};
+
 // Enums
 
 pub enum Scatter<'a> {
@@ -55,8 +57,8 @@ impl Lambertian {
         return Self{albedo: albedo};
     }
     /// Create a boxed material
-    pub fn boxed(albedo: Color) -> Box<dyn Material> {
-        return Box::new(Lambertian{albedo: albedo});
+    pub fn boxed(albedo: Color) -> Rc<dyn Material> {
+        return Rc::new(Lambertian{albedo: albedo});
     }
 }
 
